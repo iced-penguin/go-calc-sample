@@ -30,20 +30,29 @@ func main() {
 	window.SetContent(
 		widget.NewVBox(
 			label,
-			fyne.NewContainerWithLayout(
-				layout.NewGridLayout(3),
-				widget.NewButton("7", func() { pushNum(7) }),
-				widget.NewButton("8", func() { pushNum(8) }),
-				widget.NewButton("9", func() { pushNum(9) }),
-				widget.NewButton("4", func() { pushNum(4) }),
-				widget.NewButton("5", func() { pushNum(5) }),
-				widget.NewButton("6", func() { pushNum(6) }),
-				widget.NewButton("1", func() { pushNum(1) }),
-				widget.NewButton("2", func() { pushNum(2) }),
-				widget.NewButton("3", func() { pushNum(3) }),
-				widget.NewButton("0", func() { pushNum(0) }),
-				layout.NewSpacer(),
-				layout.NewSpacer(),
+			widget.NewHBox(
+				fyne.NewContainerWithLayout(
+					layout.NewGridLayout(3),
+					widget.NewButton("7", func() { pushNum(7) }),
+					widget.NewButton("8", func() { pushNum(8) }),
+					widget.NewButton("9", func() { pushNum(9) }),
+					widget.NewButton("4", func() { pushNum(4) }),
+					widget.NewButton("5", func() { pushNum(5) }),
+					widget.NewButton("6", func() { pushNum(6) }),
+					widget.NewButton("1", func() { pushNum(1) }),
+					widget.NewButton("2", func() { pushNum(2) }),
+					widget.NewButton("3", func() { pushNum(3) }),
+					widget.NewButton("0", func() { pushNum(0) }),
+					layout.NewSpacer(),
+					widget.NewButton("=", nil),
+				),
+				widget.NewVBox(
+					widget.NewButton("CL", nil),
+					widget.NewButton("/", nil),
+					widget.NewButton("*", nil),
+					widget.NewButton("+", nil),
+					widget.NewButton("-", nil),
+				),
 			),
 		),
 	)
