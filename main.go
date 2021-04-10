@@ -16,6 +16,7 @@ func main() {
 
 	formula := ""
 	label := widget.NewLabel(formula)
+	label.Alignment = fyne.TextAlignTrailing
 
 	pushNum := func(n int) {
 		// 数式の先頭が0とならないように
