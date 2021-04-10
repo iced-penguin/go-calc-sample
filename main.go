@@ -27,6 +27,11 @@ func main() {
 		label.SetText(formula)
 	}
 
+	clear := func() {
+		formula = ""
+		label.SetText(formula)
+	}
+
 	window.SetContent(
 		widget.NewVBox(
 			label,
@@ -47,7 +52,7 @@ func main() {
 					widget.NewButton("=", nil),
 				),
 				widget.NewVBox(
-					widget.NewButton("CL", nil),
+					widget.NewButton("CL", clear),
 					widget.NewButton("/", nil),
 					widget.NewButton("*", nil),
 					widget.NewButton("+", nil),
