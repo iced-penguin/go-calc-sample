@@ -1,20 +1,34 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 )
 
 func main() {
+	var formula string
+	var isResult bool
+	var canEnterOperator bool
+
+	init := func() {
+		formula = ""
+		isResult = false
+		canEnterOperator = true
+	}
+
 	app := app.New()
 	window := app.NewWindow("Calc")
 
-	formula := ""
+	init()
+
 	label := widget.NewLabel(formula)
 	label.Alignment = fyne.TextAlignTrailing
 
@@ -23,12 +37,56 @@ func main() {
 		if formula == "" && n == 0 {
 			return
 		}
+		// 計算直後に数字を入力すると入力前にクリア
+		if isResult {
+			init()
+		}
 		formula += strconv.Itoa(n)
 		label.SetText(formula)
 	}
 
+	pushOperator := func(s string) {
+		if formula == "" || !canEnterOperator {
+			return
+		}
+		// 計算結果に続けて演算子を入力
+		if isResult {
+			isResult = false
+		}
+		formula += " " + s + " "
+		canEnterOperator = false
+		label.SetText(formula)
+	}
+
+	pushEnter := func() {
+		s := strings.Split(formula, " ")
+		if len(s) != 3 {
+			return
+		}
+
+		num1, err := strconv.Atoi(s[0])
+		if err != nil {
+			dialog.ShowError(err, window)
+		}
+		num2, err := strconv.Atoi(s[2])
+		if err != nil {
+			dialog.ShowError(err, window)
+		}
+		op := s[1]
+
+		result, err := calc(num1, num2, op)
+		if err != nil {
+			dialog.ShowError(err, window)
+		}
+
+		formula = strconv.Itoa(result)
+		isResult = true
+		canEnterOperator = true
+		label.SetText(formula)
+	}
+
 	clear := func() {
-		formula = ""
+		init()
 		label.SetText(formula)
 	}
 
@@ -51,15 +109,15 @@ func main() {
 						widget.NewButton("3", func() { pushNum(3) }),
 						widget.NewButton("0", func() { pushNum(0) }),
 						layout.NewSpacer(),
-						widget.NewButton("=", nil),
+						widget.NewButton("=", pushEnter),
 					),
 				),
 				widget.NewVBox(
 					widget.NewButton("CL", clear),
-					widget.NewButton("/", nil),
-					widget.NewButton("*", nil),
-					widget.NewButton("+", nil),
-					widget.NewButton("-", nil),
+					widget.NewButton("/", func() { pushOperator("/") }),
+					widget.NewButton("*", func() { pushOperator("*") }),
+					widget.NewButton("+", func() { pushOperator("+") }),
+					widget.NewButton("-", func() { pushOperator("-") }),
 				),
 			),
 		),
@@ -67,4 +125,21 @@ func main() {
 
 	app.Settings().SetTheme(theme.DarkTheme())
 	window.ShowAndRun()
+}
+
+func calc(num1 int, num2 int, op string) (int, error) {
+	var result int
+	switch op {
+	case "+":
+		result = num1 + num2
+	case "-":
+		result = num1 - num2
+	case "*":
+		result = num1 * num2
+	case "/":
+		result = num1 / num2
+	default:
+		return result, fmt.Errorf("Invalid operand %s", op)
+	}
+	return result, nil
 }
